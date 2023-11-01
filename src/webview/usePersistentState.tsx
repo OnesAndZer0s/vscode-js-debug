@@ -7,6 +7,7 @@ import { useCallback, useState } from 'preact/hooks';
 declare const acquireVsCodeApi: <T>() => {
   getState(): T;
   setState(data: T): void;
+  postMessage(message: {command:string,[key: string]: unknown}): void;
 };
 
 const api = acquireVsCodeApi<{ componentState?: { [key: string]: unknown } }>();
@@ -33,3 +34,8 @@ export const usePersistedState = <T extends unknown>(name: string, initialValue:
 
   return [value, setWrapped] as const;
 };
+
+
+export const postMessage = (message: {command:string,[key: string]: unknown}) => {
+  api.postMessage(message);
+}

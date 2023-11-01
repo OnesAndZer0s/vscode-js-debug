@@ -4,11 +4,11 @@
 
 import { Fragment, FunctionComponent, h, render } from 'preact';
 import { IDiagnosticDump } from '../adapter/diagnosics';
+import { usePersistedState } from '../webview/usePersistentState';
 import { BreakpointHelper } from './breakpointHelper';
 import { Experience, Intro } from './intro';
 import { SourceExplorer } from './sourceExplorer';
 import { DumpContext } from './useDump';
-import { usePersistedState } from './usePersistentState';
 
 import './diagnosticTool.css';
 

@@ -13,10 +13,10 @@ import {
 } from '../adapter/diagnosics';
 import Cdp from '../cdp/api';
 import { flatten } from '../common/objUtils';
+import { usePersistedState } from '../webview/usePersistentState';
 import { DecisionButtons } from './decisionButtons';
 import { basename, isBrowserType, isNodeType, prettyName } from './diagnosticPaths';
 import { useDump } from './useDump';
-import { usePersistedState } from './usePersistentState';
 
 export const BreakpointHelper: FunctionComponent = () => {
   const dump = useDump();

@@ -39,58 +39,58 @@ import { SourceSteppingUI } from './sourceSteppingUI';
 import { StartDebugingAndStopOnEntry } from './startDebuggingAndStopOnEntry';
 import { TerminalLinkHandler } from './terminalLinkHandler';
 
-export const registerUiComponents = (container: Container) => {
-  container.bind(VSCodeApi).toConstantValue(require('vscode'));
+export const registerUiComponents = ( container: Container ) => {
+  container.bind( VSCodeApi ).toConstantValue( require( 'vscode' ) );
 
-  allConfigurationResolvers.forEach(cls => {
+  allConfigurationResolvers.forEach( cls => {
     container
-      .bind(cls as { new (...args: unknown[]): unknown })
+      .bind( cls as { new( ...args: unknown[] ): unknown } )
       .toSelf()
       .inSingletonScope();
-    container.bind(IDebugConfigurationResolver).to(cls);
-  });
+    container.bind( IDebugConfigurationResolver ).to( cls );
+  } );
 
-  allConfigurationProviders.forEach(cls =>
-    container.bind(IDebugConfigurationProvider).to(cls).inSingletonScope(),
+  allConfigurationProviders.forEach( cls =>
+    container.bind( IDebugConfigurationProvider ).to( cls ).inSingletonScope(),
   );
 
-  container.bind(IExtensionContribution).to(LongPredictionUI).inSingletonScope();
-  container.bind(IExtensionContribution).to(DebugLinkUi).inSingletonScope();
-  container.bind(IExtensionContribution).to(CascadeTerminationTracker).inSingletonScope();
-  container.bind(IExtensionContribution).to(DisableSourceMapUI).inSingletonScope();
-  container.bind(IExtensionContribution).to(DiagnosticsUI).inSingletonScope();
-  container.bind(IExtensionContribution).to(StartDebugingAndStopOnEntry).inSingletonScope();
-  container.bind(IExtensionContribution).to(JsDebugPortAttributesProvider).inSingletonScope();
-  container.bind(IExtensionContribution).to(EdgeDevToolOpener).inSingletonScope();
-  container.bind(IExtensionContribution).to(ExcludedCallersUI).inSingletonScope();
-  container.bind(IExtensionContribution).to(PrettyPrintUI).inSingletonScope();
-  container.bind(IExtensionContribution).to(SourceSteppingUI).inSingletonScope();
-  container.bind(ILinkedBreakpointLocation).to(LinkedBreakpointLocationUI).inSingletonScope();
-  container.bind(DebugSessionTracker).toSelf().inSingletonScope().onActivation(trackDispose);
-  container.bind(UiProfileManager).toSelf().inSingletonScope().onActivation(trackDispose);
-  container.bind(TerminalLinkHandler).toSelf().inSingletonScope();
-  container.bind(DisableSourceMapUI).toSelf().inSingletonScope();
-  container.bind(IDwarfModuleProvider).to(DwarfModuleProvider).inSingletonScope();
+  container.bind( IExtensionContribution ).to( LongPredictionUI ).inSingletonScope();
+  container.bind( IExtensionContribution ).to( DebugLinkUi ).inSingletonScope();
+  container.bind( IExtensionContribution ).to( CascadeTerminationTracker ).inSingletonScope();
+  container.bind( IExtensionContribution ).to( DisableSourceMapUI ).inSingletonScope();
+  container.bind( IExtensionContribution ).to( DiagnosticsUI ).inSingletonScope();
+  container.bind( IExtensionContribution ).to( StartDebugingAndStopOnEntry ).inSingletonScope();
+  container.bind( IExtensionContribution ).to( JsDebugPortAttributesProvider ).inSingletonScope();
+  container.bind( IExtensionContribution ).to( EdgeDevToolOpener ).inSingletonScope();
+  container.bind( IExtensionContribution ).to( ExcludedCallersUI ).inSingletonScope();
+  container.bind( IExtensionContribution ).to( PrettyPrintUI ).inSingletonScope();
+  container.bind( IExtensionContribution ).to( SourceSteppingUI ).inSingletonScope();
+  container.bind( ILinkedBreakpointLocation ).to( LinkedBreakpointLocationUI ).inSingletonScope();
+  container.bind( DebugSessionTracker ).toSelf().inSingletonScope().onActivation( trackDispose );
+  container.bind( UiProfileManager ).toSelf().inSingletonScope().onActivation( trackDispose );
+  container.bind( TerminalLinkHandler ).toSelf().inSingletonScope();
+  container.bind( DisableSourceMapUI ).toSelf().inSingletonScope();
+  container.bind( IDwarfModuleProvider ).to( DwarfModuleProvider ).inSingletonScope();
 
   container
-    .bind(ITerminationConditionFactory)
-    .to(DurationTerminationConditionFactory)
+    .bind( ITerminationConditionFactory )
+    .to( DurationTerminationConditionFactory )
     .inSingletonScope();
   container
-    .bind(ITerminationConditionFactory)
-    .to(ManualTerminationConditionFactory)
+    .bind( ITerminationConditionFactory )
+    .to( ManualTerminationConditionFactory )
     .inSingletonScope();
   container
-    .bind(ITerminationConditionFactory)
-    .to(BreakpointTerminationConditionFactory)
+    .bind( ITerminationConditionFactory )
+    .to( BreakpointTerminationConditionFactory )
     .inSingletonScope();
 };
 
-export const registerTopLevelSessionComponents = (container: Container) => {
-  container.bind(ILauncher).to(TerminalNodeLauncher).onActivation(trackDispose);
+export const registerTopLevelSessionComponents = ( container: Container ) => {
+  container.bind( ILauncher ).to( TerminalNodeLauncher ).onActivation( trackDispose );
 
   // request options:
-  container.bind(IRequestOptionsProvider).to(SettingRequestOptionsProvider).inSingletonScope();
+  container.bind( IRequestOptionsProvider ).to( SettingRequestOptionsProvider ).inSingletonScope();
 
-  container.bind(IExperimentationService).to(VSCodeExperimentationService).inSingletonScope();
+  container.bind( IExperimentationService ).to( VSCodeExperimentationService ).inSingletonScope();
 };

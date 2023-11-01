@@ -10,7 +10,7 @@ import {
   Commands,
   DebugType,
   preferredDebugTypes,
-  registerCommand,
+  registerCommand
 } from './common/contributionUtils';
 import { extensionId } from './configuration';
 import { createGlobalContainer } from './ioc';
@@ -20,24 +20,28 @@ import { registerAutoAttach } from './ui/autoAttach';
 import { registerCompanionBrowserLaunch } from './ui/companionBrowserLaunch';
 import { IDebugConfigurationProvider, IDebugConfigurationResolver } from './ui/configuration';
 import { registerCustomBreakpointsUI } from './ui/customBreakpointsUI';
-import { registerXHRBreakpointsUI } from './ui/xhrBreakpointsUI';
 import { debugNpmScript } from './ui/debugNpmScript';
 import { DebugSessionTracker } from './ui/debugSessionTracker';
 import { registerDebugTerminalUI } from './ui/debugTerminalUI';
 import { attachProcess, pickProcess } from './ui/processPicker';
 import { registerProfilingCommand } from './ui/profiling';
+
 import { registerRequestCDPProxy } from './ui/requestCDPProxy';
 import { registerRevealPage } from './ui/revealPage';
 import { TerminalLinkHandler } from './ui/terminalLinkHandler';
 import { toggleSkippingFile } from './ui/toggleSkippingFile';
 import { VSCodeSessionManager } from './ui/vsCodeSessionManager';
+import { registerXHRBreakpointsUI } from './ui/xhrBreakpointsUI';
+import { registerElementsUI } from './ui/elementsUI';
 
-export function activate(context: vscode.ExtensionContext) {
-  if (vscode.l10n.bundle) {
-    l10n.config({ contents: vscode.l10n.bundle });
+
+export function activate ( context: vscode.ExtensionContext ) {
+  if ( vscode.l10n.bundle ) {
+    l10n.config( { contents: vscode.l10n.bundle } );
   }
 
-  const services = createGlobalContainer({
+
+  const services = createGlobalContainer( {
     // On Windows, use the os.tmpdir() since the extension storage path is too long. See:
     // https://github.com/microsoft/vscode-js-debug/issues/342
     storagePath:
@@ -45,32 +49,32 @@ export function activate(context: vscode.ExtensionContext) {
     isVsCode: true,
     isRemote:
       !!process.env.JS_DEBUG_USE_COMPANION ||
-      vscode.extensions.getExtension(extensionId)?.extensionKind === vscode.ExtensionKind.Workspace,
+      vscode.extensions.getExtension( extensionId )?.extensionKind === vscode.ExtensionKind.Workspace,
     context,
-  });
+  } );
 
   context.subscriptions.push(
-    registerCommand(vscode.commands, Commands.DebugNpmScript, debugNpmScript),
-    registerCommand(vscode.commands, Commands.PickProcess, pickProcess),
-    registerCommand(vscode.commands, Commands.AttachProcess, attachProcess),
-    registerCommand(vscode.commands, Commands.ToggleSkipping, toggleSkippingFile),
+    registerCommand( vscode.commands, Commands.DebugNpmScript, debugNpmScript ),
+    registerCommand( vscode.commands, Commands.PickProcess, pickProcess ),
+    registerCommand( vscode.commands, Commands.AttachProcess, attachProcess ),
+    registerCommand( vscode.commands, Commands.ToggleSkipping, toggleSkippingFile ),
   );
 
-  const debugResolvers = services.getAll<IDebugConfigurationResolver>(IDebugConfigurationResolver);
-  for (const resolver of debugResolvers) {
+  const debugResolvers = services.getAll<IDebugConfigurationResolver>( IDebugConfigurationResolver );
+  for ( const resolver of debugResolvers ) {
     const cast = resolver as vscode.DebugConfigurationProvider;
     context.subscriptions.push(
-      vscode.debug.registerDebugConfigurationProvider(resolver.type, cast),
+      vscode.debug.registerDebugConfigurationProvider( resolver.type, cast ),
     );
 
-    const preferred = preferredDebugTypes.get(resolver.type as DebugType);
-    if (preferred) {
-      context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider(preferred, cast));
+    const preferred = preferredDebugTypes.get( resolver.type as DebugType );
+    if ( preferred ) {
+      context.subscriptions.push( vscode.debug.registerDebugConfigurationProvider( preferred, cast ) );
     }
   }
 
-  const debugProviders = services.getAll<IDebugConfigurationProvider>(IDebugConfigurationProvider);
-  for (const provider of debugProviders) {
+  const debugProviders = services.getAll<IDebugConfigurationProvider>( IDebugConfigurationProvider );
+  for ( const provider of debugProviders ) {
     vscode.debug.registerDebugConfigurationProvider(
       provider.type,
       provider as vscode.DebugConfigurationProvider,
@@ -78,36 +82,39 @@ export function activate(context: vscode.ExtensionContext) {
     );
   }
 
-  const sessionManager = new VSCodeSessionManager(services);
+  const sessionManager = new VSCodeSessionManager( services );
   context.subscriptions.push(
-    ...[...allDebugTypes].map(type =>
-      vscode.debug.registerDebugAdapterDescriptorFactory(type, sessionManager),
+    ...[ ...allDebugTypes ].map( type =>
+      vscode.debug.registerDebugAdapterDescriptorFactory( type, sessionManager ),
     ),
   );
   context.subscriptions.push(
-    vscode.debug.onDidTerminateDebugSession(s => sessionManager.terminate(s)),
+    vscode.debug.onDidTerminateDebugSession( s => sessionManager.terminate( s ) ),
   );
-  context.subscriptions.push(sessionManager);
+  context.subscriptions.push( sessionManager );
 
-  const debugSessionTracker = services.get(DebugSessionTracker);
+  const debugSessionTracker = services.get( DebugSessionTracker );
   debugSessionTracker.attach();
 
-  registerCompanionBrowserLaunch(context);
-  registerCustomBreakpointsUI(context, debugSessionTracker);
-  registerXHRBreakpointsUI(context, debugSessionTracker);
+  registerCompanionBrowserLaunch( context );
+  registerCustomBreakpointsUI( context, debugSessionTracker );
+  registerXHRBreakpointsUI( context, debugSessionTracker );
+  registerElementsUI( context, debugSessionTracker, services );
+
   registerDebugTerminalUI(
     context,
-    services.get(DelegateLauncherFactory),
-    services.get(TerminalLinkHandler),
+    services.get( DelegateLauncherFactory ),
+    services.get( TerminalLinkHandler ),
     services,
   );
-  registerProfilingCommand(context, services);
-  registerAutoAttach(context, services.get(DelegateLauncherFactory), services);
-  registerRevealPage(context, debugSessionTracker);
-  registerRequestCDPProxy(context, debugSessionTracker);
-  services.getAll<IExtensionContribution>(IExtensionContribution).forEach(c => c.register(context));
+  registerProfilingCommand( context, services );
+  registerAutoAttach( context, services.get( DelegateLauncherFactory ), services );
+  registerRevealPage( context, debugSessionTracker );
+  registerRequestCDPProxy( context, debugSessionTracker );
+
+  services.getAll<IExtensionContribution>( IExtensionContribution ).forEach( c => c.register( context ) );
 }
 
-export function deactivate() {
+export function deactivate () {
   // nothing to do, yet...
 }

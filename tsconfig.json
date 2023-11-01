@@ -17,6 +17,7 @@
     "skipLibCheck": true,
     "jsx": "react",
     "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
     "types": ["node", "chai-subset", "chai-as-promised", "mocha"]
   },
   "include": ["src"]

@@ -6,9 +6,9 @@ import { Fragment, FunctionComponent, h } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 import { IDiagnosticSource } from '../adapter/diagnosics';
 import { truthy } from '../common/objUtils';
+import { usePersistedState } from '../webview/usePersistentState';
 import { basename, prettyName, sortScore } from './diagnosticPaths';
 import { useDump } from './useDump';
-import { usePersistedState } from './usePersistentState';
 
 export const SourceExplorer: FunctionComponent = () => {
   const dump = useDump();
