@@ -66,7 +66,7 @@ export type DescribedAttribute<T> = JSONSchema6 &
   };
 
 type ConfigurationAttributes<T> = {
-  [ K in keyof Omit<T, OmittedKeysFromAttributes> ]: DescribedAttribute<T[ K ]>;
+  [K in keyof Omit<T, OmittedKeysFromAttributes>]: DescribedAttribute<T[K]>;
 };
 type Described =
   | { description: MappedReferenceString }
@@ -75,7 +75,7 @@ type Described =
   | { deprecated: boolean };
 
 type Menus = {
-  [ menuId: string ]: {
+  [menuId: string]: {
     command: Commands;
     title?: MappedReferenceString;
     when?: string;
@@ -87,16 +87,16 @@ const forSomeContextKeys = (
   types: Iterable<string>,
   contextKey: string,
   andExpr: string | undefined,
-) => [ ...types ].map( d => `${ contextKey } == ${ d }` + ( andExpr ? ` && ${ andExpr }` : '' ) ).join( ' || ' );
+) => [...types].map(d => `${contextKey} == ${d}` + (andExpr ? ` && ${andExpr}` : '')).join(' || ');
 
-const forAnyDebugType = ( contextKey: string, andExpr?: string ) =>
-  forSomeContextKeys( allDebugTypes, contextKey, andExpr );
+const forAnyDebugType = (contextKey: string, andExpr?: string) =>
+  forSomeContextKeys(allDebugTypes, contextKey, andExpr);
 
-const forBrowserDebugType = ( contextKey: string, andExpr?: string ) =>
-  forSomeContextKeys( [ DebugType.Chrome, DebugType.Edge ], contextKey, andExpr );
+const forBrowserDebugType = (contextKey: string, andExpr?: string) =>
+  forSomeContextKeys([DebugType.Chrome, DebugType.Edge], contextKey, andExpr);
 
-const forNodeDebugType = ( contextKey: string, andExpr?: string ) =>
-  forSomeContextKeys( [ DebugType.Node, DebugType.ExtensionHost, 'node' ], contextKey, andExpr );
+const forNodeDebugType = (contextKey: string, andExpr?: string) =>
+  forSomeContextKeys([DebugType.Node, DebugType.ExtensionHost, 'node'], contextKey, andExpr);
 
 /**
  * Opaque type for a string passed through refString, ensuring all templates
@@ -104,58 +104,58 @@ const forNodeDebugType = ( contextKey: string, andExpr?: string ) =>
  */
 type MappedReferenceString = { __opaque: true } & string;
 
-const refString = ( str: keyof typeof strings & string ): MappedReferenceString =>
-  `%${ str }%` as unknown as MappedReferenceString;
+const refString = (str: keyof typeof strings & string): MappedReferenceString =>
+  `%${str}%` as unknown as MappedReferenceString;
 
 /**
  * Type definition for a debugger section. VSCode doesn't publish these types,
  * and we want to bind them more tightly to the types from the configuration anyway.
  */
 interface IDebugger<T extends AnyLaunchConfiguration> {
-  type: T[ 'type' ];
-  request: T[ 'request' ];
+  type: T['type'];
+  request: T['request'];
   label: MappedReferenceString;
   program?: string;
   runtime?: string;
   languages: string[];
-  variables?: { [ key: string ]: Commands };
-  required?: ( keyof T )[];
-  configurationSnippets: ( {
+  variables?: { [key: string]: Commands };
+  required?: (keyof T)[];
+  configurationSnippets: ({
     label: MappedReferenceString;
     body: ResolvingConfiguration<T & { preLaunchTask?: string }>;
-  } & Described )[];
+  } & Described)[];
   configurationAttributes: ConfigurationAttributes<T>;
   defaults: T;
   strings?: { unverifiedBreakpoints?: string };
 }
 
-const commonLanguages = [ 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' ];
-const browserLanguages = [ ...commonLanguages, 'html', 'css', 'coffeescript', 'handlebars', 'vue' ];
+const commonLanguages = ['javascript', 'typescript', 'javascriptreact', 'typescriptreact'];
+const browserLanguages = [...commonLanguages, 'html', 'css', 'coffeescript', 'handlebars', 'vue'];
 
 const baseConfigurationAttributes: ConfigurationAttributes<IBaseConfiguration> = {
   resolveSourceMapLocations: {
-    type: [ 'array', 'null' ],
-    description: refString( 'node.resolveSourceMapLocations.description' ),
+    type: ['array', 'null'],
+    description: refString('node.resolveSourceMapLocations.description'),
     default: null,
     items: {
       type: 'string',
     },
   },
   outFiles: {
-    type: [ 'array' ],
-    description: refString( 'outFiles.description' ),
-    default: [ ...baseDefaults.outFiles ],
+    type: ['array'],
+    description: refString('outFiles.description'),
+    default: [...baseDefaults.outFiles],
     items: {
       type: 'string',
     },
   },
   pauseForSourceMap: {
     type: 'boolean',
-    markdownDescription: refString( 'node.pauseForSourceMap.description' ),
+    markdownDescription: refString('node.pauseForSourceMap.description'),
     default: false,
   },
   showAsyncStacks: {
-    description: refString( 'node.showAsyncStacks.description' ),
+    description: refString('node.showAsyncStacks.description'),
     default: true,
     oneOf: [
       {
@@ -163,7 +163,7 @@ const baseConfigurationAttributes: ConfigurationAttributes<IBaseConfiguration> =
       },
       {
         type: 'object',
-        required: [ 'onAttach' ],
+        required: ['onAttach'],
         properties: {
           onAttach: {
             type: 'number',
@@ -173,7 +173,7 @@ const baseConfigurationAttributes: ConfigurationAttributes<IBaseConfiguration> =
       },
       {
         type: 'object',
-        required: [ 'onceBreakpointResolved' ],
+        required: ['onceBreakpointResolved'],
         properties: {
           onceBreakpointResolved: {
             type: 'number',
@@ -185,27 +185,27 @@ const baseConfigurationAttributes: ConfigurationAttributes<IBaseConfiguration> =
   },
   skipFiles: {
     type: 'array',
-    description: refString( 'browser.skipFiles.description' ),
-    default: [ '<node_internals>/**' ],
+    description: refString('browser.skipFiles.description'),
+    default: ['<node_internals>/**'],
   },
   smartStep: {
     type: 'boolean',
-    description: refString( 'smartStep.description' ),
+    description: refString('smartStep.description'),
     default: true,
   },
   sourceMaps: {
     type: 'boolean',
-    description: refString( 'browser.sourceMaps.description' ),
+    description: refString('browser.sourceMaps.description'),
     default: true,
   },
   sourceMapRenames: {
     type: 'boolean',
     default: true,
-    description: refString( 'browser.sourceMapRenames.description' ),
+    description: refString('browser.sourceMapRenames.description'),
   },
   sourceMapPathOverrides: {
     type: 'object',
-    description: refString( 'node.sourceMapPathOverrides.description' ),
+    description: refString('node.sourceMapPathOverrides.description'),
     default: {
       'webpack://?:*/*': '${workspaceFolder}/*',
       'webpack:///./~/*': '${workspaceFolder}/node_modules/*',
@@ -214,40 +214,40 @@ const baseConfigurationAttributes: ConfigurationAttributes<IBaseConfiguration> =
   },
   timeout: {
     type: 'number',
-    description: refString( 'node.timeout.description' ),
+    description: refString('node.timeout.description'),
     default: 10000,
   },
   timeouts: {
     type: 'object',
-    description: refString( 'timeouts.generalDescription' ),
+    description: refString('timeouts.generalDescription'),
     default: {},
     properties: {
       sourceMapMinPause: {
         type: 'number',
-        description: refString( 'timeouts.sourceMaps.sourceMapMinPause.description' ),
+        description: refString('timeouts.sourceMaps.sourceMapMinPause.description'),
         default: 1000,
       },
       sourceMapCumulativePause: {
         type: 'number',
-        description: refString( 'timeouts.sourceMaps.sourceMapCumulativePause.description' ),
+        description: refString('timeouts.sourceMaps.sourceMapCumulativePause.description'),
         default: 1000,
       },
       hoverEvaluation: {
         type: 'number',
-        description: refString( 'timeouts.hoverEvaluation.description' ),
+        description: refString('timeouts.hoverEvaluation.description'),
         default: 500,
       },
     },
     additionalProperties: false,
-    markdownDescription: refString( 'timeouts.generalDescription.markdown' ),
+    markdownDescription: refString('timeouts.generalDescription.markdown'),
   },
   trace: {
-    description: refString( 'trace.description' ),
+    description: refString('trace.description'),
     default: true,
     oneOf: [
       {
         type: 'boolean',
-        description: refString( 'trace.boolean.description' ),
+        description: refString('trace.boolean.description'),
       },
       {
         type: 'object',
@@ -255,36 +255,36 @@ const baseConfigurationAttributes: ConfigurationAttributes<IBaseConfiguration> =
         properties: {
           stdio: {
             type: 'boolean',
-            description: refString( 'trace.stdio.description' ),
+            description: refString('trace.stdio.description'),
           },
           logFile: {
-            type: [ 'string', 'null' ],
-            description: refString( 'trace.logFile.description' ),
+            type: ['string', 'null'],
+            description: refString('trace.logFile.description'),
           },
         },
       },
     ],
   },
   outputCapture: {
-    enum: [ OutputSource.Console, OutputSource.Stdio ],
-    markdownDescription: refString( 'node.launch.outputCapture.description' ),
+    enum: [OutputSource.Console, OutputSource.Stdio],
+    markdownDescription: refString('node.launch.outputCapture.description'),
     default: OutputSource.Console,
   },
   enableContentValidation: {
     default: true,
     type: 'boolean',
-    description: refString( 'enableContentValidation.description' ),
+    description: refString('enableContentValidation.description'),
   },
   customDescriptionGenerator: {
     type: 'string',
     default: undefined,
-    description: refString( 'customDescriptionGenerator.description' ),
+    description: refString('customDescriptionGenerator.description'),
   },
   customPropertiesGenerator: {
     type: 'string',
     default: undefined,
     deprecated: true,
-    description: refString( 'customPropertiesGenerator.description' ),
+    description: refString('customPropertiesGenerator.description'),
   },
   cascadeTerminateToConfigurations: {
     type: 'array',
@@ -293,12 +293,12 @@ const baseConfigurationAttributes: ConfigurationAttributes<IBaseConfiguration> =
       uniqueItems: true,
     },
     default: [],
-    description: refString( 'base.cascadeTerminateToConfigurations.label' ),
+    description: refString('base.cascadeTerminateToConfigurations.label'),
   },
   enableDWARF: {
     type: 'boolean',
     default: true,
-    markdownDescription: refString( 'base.enableDWARF.label' ),
+    markdownDescription: refString('base.enableDWARF.label'),
   },
 };
 
@@ -309,40 +309,40 @@ const nodeBaseConfigurationAttributes: ConfigurationAttributes<INodeBaseConfigur
   ...baseConfigurationAttributes,
   resolveSourceMapLocations: {
     ...baseConfigurationAttributes.resolveSourceMapLocations,
-    default: [ '${workspaceFolder}/**', '!**/node_modules/**' ],
+    default: ['${workspaceFolder}/**', '!**/node_modules/**'],
   },
   cwd: {
     type: 'string',
-    description: refString( 'node.launch.cwd.description' ),
+    description: refString('node.launch.cwd.description'),
     default: '${workspaceFolder}',
     docDefault: 'localRoot || ${workspaceFolder}',
   },
   localRoot: {
-    type: [ 'string', 'null' ],
-    description: refString( 'node.localRoot.description' ),
+    type: ['string', 'null'],
+    description: refString('node.localRoot.description'),
     default: null,
   },
   remoteRoot: {
-    type: [ 'string', 'null' ],
-    description: refString( 'node.remoteRoot.description' ),
+    type: ['string', 'null'],
+    description: refString('node.remoteRoot.description'),
     default: null,
   },
   autoAttachChildProcesses: {
     type: 'boolean',
-    description: refString( 'node.launch.autoAttachChildProcesses.description' ),
+    description: refString('node.launch.autoAttachChildProcesses.description'),
     default: true,
   },
   env: {
     type: 'object',
     additionalProperties: {
-      type: [ 'string', 'null' ],
+      type: ['string', 'null'],
     },
-    markdownDescription: refString( 'node.launch.env.description' ),
+    markdownDescription: refString('node.launch.env.description'),
     default: {},
   },
   envFile: {
     type: 'string',
-    description: refString( 'node.launch.envFile.description' ),
+    description: refString('node.launch.envFile.description'),
     default: '${workspaceFolder}/.env',
   },
   runtimeSourcemapPausePatterns: {
@@ -350,13 +350,13 @@ const nodeBaseConfigurationAttributes: ConfigurationAttributes<INodeBaseConfigur
     items: {
       type: 'string',
     },
-    markdownDescription: refString( 'node.launch.runtimeSourcemapPausePatterns' ),
+    markdownDescription: refString('node.launch.runtimeSourcemapPausePatterns'),
     default: [],
   },
   nodeVersionHint: {
     type: 'number',
     minimum: 8,
-    description: refString( 'node.versionHint.description' ),
+    description: refString('node.versionHint.description'),
     default: 12,
   },
 };
@@ -367,26 +367,26 @@ const nodeBaseConfigurationAttributes: ConfigurationAttributes<INodeBaseConfigur
 const nodeAttachConfig: IDebugger<INodeAttachConfiguration> = {
   type: DebugType.Node,
   request: 'attach',
-  label: refString( 'node.label' ),
+  label: refString('node.label'),
   languages: commonLanguages,
   variables: {
     PickProcess: Commands.PickProcess,
   },
   configurationSnippets: [
     {
-      label: refString( 'node.snippet.attach.label' ),
-      description: refString( 'node.snippet.attach.description' ),
+      label: refString('node.snippet.attach.label'),
+      description: refString('node.snippet.attach.description'),
       body: {
         type: DebugType.Node,
         request: 'attach',
         name: '${1:Attach}',
         port: 9229,
-        skipFiles: [ '<node_internals>/**' ],
+        skipFiles: ['<node_internals>/**'],
       },
     },
     {
-      label: refString( 'node.snippet.remoteattach.label' ),
-      description: refString( 'node.snippet.remoteattach.description' ),
+      label: refString('node.snippet.remoteattach.label'),
+      description: refString('node.snippet.remoteattach.description'),
       body: {
         type: DebugType.Node,
         request: 'attach',
@@ -395,18 +395,18 @@ const nodeAttachConfig: IDebugger<INodeAttachConfiguration> = {
         port: 9229,
         localRoot: '^"\\${workspaceFolder}"',
         remoteRoot: '${3:Absolute path to the remote directory containing the program}',
-        skipFiles: [ '<node_internals>/**' ],
+        skipFiles: ['<node_internals>/**'],
       },
     },
     {
-      label: refString( 'node.snippet.attachProcess.label' ),
-      description: refString( 'node.snippet.attachProcess.description' ),
+      label: refString('node.snippet.attachProcess.label'),
+      description: refString('node.snippet.attachProcess.description'),
       body: {
         type: DebugType.Node,
         request: 'attach',
         name: '${1:Attach by Process ID}',
         processId: '^"\\${command:PickProcess}"',
-        skipFiles: [ '<node_internals>/**' ],
+        skipFiles: ['<node_internals>/**'],
       },
     },
   ],
@@ -414,26 +414,26 @@ const nodeAttachConfig: IDebugger<INodeAttachConfiguration> = {
     ...nodeBaseConfigurationAttributes,
     address: {
       type: 'string',
-      description: refString( 'node.address.description' ),
+      description: refString('node.address.description'),
       default: 'localhost',
     },
     port: {
       type: 'number',
-      description: refString( 'node.port.description' ),
+      description: refString('node.port.description'),
       default: 9229,
     },
     websocketAddress: {
       type: 'string',
-      description: refString( 'node.websocket.address.description' ),
+      description: refString('node.websocket.address.description'),
       default: undefined,
     },
     remoteHostHeader: {
       type: 'string',
-      description: refString( 'node.remote.host.header.description' ),
+      description: refString('node.remote.host.header.description'),
       default: undefined,
     },
     restart: {
-      description: refString( 'node.attach.restart.description' ),
+      description: refString('node.attach.restart.description'),
       default: true,
       oneOf: [
         {
@@ -450,17 +450,17 @@ const nodeAttachConfig: IDebugger<INodeAttachConfiguration> = {
     },
     processId: {
       type: 'string',
-      description: refString( 'node.attach.processId.description' ),
+      description: refString('node.attach.processId.description'),
       default: '${command:PickProcess}',
     },
     attachExistingChildren: {
       type: 'boolean',
-      description: refString( 'node.attach.attachExistingChildren.description' ),
+      description: refString('node.attach.attachExistingChildren.description'),
       default: false,
     },
     continueOnAttach: {
       type: 'boolean',
-      markdownDescription: refString( 'node.attach.continueOnAttach' ),
+      markdownDescription: refString('node.attach.continueOnAttach'),
       default: true,
     },
   },
@@ -473,38 +473,38 @@ const nodeAttachConfig: IDebugger<INodeAttachConfiguration> = {
 const nodeLaunchConfig: IDebugger<INodeLaunchConfiguration> = {
   type: DebugType.Node,
   request: 'launch',
-  label: refString( 'node.label' ),
+  label: refString('node.label'),
   languages: commonLanguages,
   variables: {
     PickProcess: Commands.PickProcess,
   },
   configurationSnippets: [
     {
-      label: refString( 'node.snippet.launch.label' ),
-      description: refString( 'node.snippet.launch.description' ),
+      label: refString('node.snippet.launch.label'),
+      description: refString('node.snippet.launch.description'),
       body: {
         type: DebugType.Node,
         request: 'launch',
         name: '${2:Launch Program}',
         program: '^"\\${workspaceFolder}/${1:app.js}"',
-        skipFiles: [ '<node_internals>/**' ],
+        skipFiles: ['<node_internals>/**'],
       },
     },
     {
-      label: refString( 'node.snippet.npm.label' ),
-      markdownDescription: refString( 'node.snippet.npm.description' ),
+      label: refString('node.snippet.npm.label'),
+      markdownDescription: refString('node.snippet.npm.description'),
       body: {
         type: DebugType.Node,
         request: 'launch',
         name: '${1:Launch via NPM}',
         runtimeExecutable: 'npm',
-        runtimeArgs: [ 'run-script', 'debug' ],
-        skipFiles: [ '<node_internals>/**' ],
+        runtimeArgs: ['run-script', 'debug'],
+        skipFiles: ['<node_internals>/**'],
       },
     },
     {
-      label: refString( 'node.snippet.nodemon.label' ),
-      description: refString( 'node.snippet.nodemon.description' ),
+      label: refString('node.snippet.nodemon.label'),
+      description: refString('node.snippet.nodemon.description'),
       body: {
         type: DebugType.Node,
         request: 'launch',
@@ -514,58 +514,58 @@ const nodeLaunchConfig: IDebugger<INodeLaunchConfiguration> = {
         restart: true,
         console: 'integratedTerminal',
         internalConsoleOptions: 'neverOpen',
-        skipFiles: [ '<node_internals>/**' ],
+        skipFiles: ['<node_internals>/**'],
       },
     },
     {
-      label: refString( 'node.snippet.mocha.label' ),
-      description: refString( 'node.snippet.mocha.description' ),
+      label: refString('node.snippet.mocha.label'),
+      description: refString('node.snippet.mocha.description'),
       body: {
         type: DebugType.Node,
         request: 'launch',
         name: 'Mocha Tests',
         program: '^"\\${workspaceFolder}/node_modules/mocha/bin/_mocha"',
-        args: [ '-u', 'tdd', '--timeout', '999999', '--colors', '^"\\${workspaceFolder}/${1:test}"' ],
+        args: ['-u', 'tdd', '--timeout', '999999', '--colors', '^"\\${workspaceFolder}/${1:test}"'],
         internalConsoleOptions: 'openOnSessionStart',
-        skipFiles: [ '<node_internals>/**' ],
+        skipFiles: ['<node_internals>/**'],
       },
     },
     {
-      label: refString( 'node.snippet.yo.label' ),
-      markdownDescription: refString( 'node.snippet.yo.description' ),
+      label: refString('node.snippet.yo.label'),
+      markdownDescription: refString('node.snippet.yo.description'),
       body: {
         type: DebugType.Node,
         request: 'launch',
         name: 'Yeoman ${1:generator}',
         program: '^"\\${workspaceFolder}/node_modules/yo/lib/cli.js"',
-        args: [ '${1:generator}' ],
+        args: ['${1:generator}'],
         console: 'integratedTerminal',
         internalConsoleOptions: 'neverOpen',
-        skipFiles: [ '<node_internals>/**' ],
+        skipFiles: ['<node_internals>/**'],
       },
     },
     {
-      label: refString( 'node.snippet.gulp.label' ),
-      description: refString( 'node.snippet.gulp.description' ),
+      label: refString('node.snippet.gulp.label'),
+      description: refString('node.snippet.gulp.description'),
       body: {
         type: DebugType.Node,
         request: 'launch',
         name: 'Gulp ${1:task}',
         program: '^"\\${workspaceFolder}/node_modules/gulp/bin/gulp.js"',
-        args: [ '${1:task}' ],
-        skipFiles: [ '<node_internals>/**' ],
+        args: ['${1:task}'],
+        skipFiles: ['<node_internals>/**'],
       },
     },
     {
-      label: refString( 'node.snippet.electron.label' ),
-      description: refString( 'node.snippet.electron.description' ),
+      label: refString('node.snippet.electron.label'),
+      description: refString('node.snippet.electron.description'),
       body: {
         type: DebugType.Node,
         request: 'launch',
         name: 'Electron Main',
         runtimeExecutable: '^"\\${workspaceFolder}/node_modules/.bin/electron"',
         program: '^"\\${workspaceFolder}/main.js"',
-        skipFiles: [ '<node_internals>/**' ],
+        skipFiles: ['<node_internals>/**'],
       },
     },
   ],
@@ -573,55 +573,55 @@ const nodeLaunchConfig: IDebugger<INodeLaunchConfiguration> = {
     ...nodeBaseConfigurationAttributes,
     cwd: {
       type: 'string',
-      description: refString( 'node.launch.cwd.description' ),
+      description: refString('node.launch.cwd.description'),
       default: '${workspaceFolder}',
     },
     program: {
       type: 'string',
-      description: refString( 'node.launch.program.description' ),
+      description: refString('node.launch.program.description'),
       default: '',
     },
     stopOnEntry: {
-      type: [ 'boolean', 'string' ],
-      description: refString( 'node.stopOnEntry.description' ),
+      type: ['boolean', 'string'],
+      description: refString('node.stopOnEntry.description'),
       default: true,
     },
     console: {
       type: 'string',
-      enum: [ 'internalConsole', 'integratedTerminal', 'externalTerminal' ],
+      enum: ['internalConsole', 'integratedTerminal', 'externalTerminal'],
       enumDescriptions: [
-        refString( 'node.launch.console.internalConsole.description' ),
-        refString( 'node.launch.console.integratedTerminal.description' ),
-        refString( 'node.launch.console.externalTerminal.description' ),
+        refString('node.launch.console.internalConsole.description'),
+        refString('node.launch.console.integratedTerminal.description'),
+        refString('node.launch.console.externalTerminal.description'),
       ],
-      description: refString( 'node.launch.console.description' ),
+      description: refString('node.launch.console.description'),
       default: 'internalConsole',
     },
     args: {
-      type: [ 'array', 'string' ],
-      description: refString( 'node.launch.args.description' ),
+      type: ['array', 'string'],
+      description: refString('node.launch.args.description'),
       items: {
         type: 'string',
       },
       default: [],
     },
     restart: {
-      description: refString( 'node.launch.restart.description' ),
+      description: refString('node.launch.restart.description'),
       ...nodeAttachConfig.configurationAttributes.restart,
     },
     runtimeExecutable: {
-      type: [ 'string', 'null' ],
-      markdownDescription: refString( 'node.launch.runtimeExecutable.description' ),
+      type: ['string', 'null'],
+      markdownDescription: refString('node.launch.runtimeExecutable.description'),
       default: 'node',
     },
     runtimeVersion: {
       type: 'string',
-      markdownDescription: refString( 'node.launch.runtimeVersion.description' ),
+      markdownDescription: refString('node.launch.runtimeVersion.description'),
       default: 'default',
     },
     runtimeArgs: {
       type: 'array',
-      description: refString( 'node.launch.runtimeArgs.description' ),
+      description: refString('node.launch.runtimeArgs.description'),
       items: {
         type: 'string',
       },
@@ -629,19 +629,19 @@ const nodeLaunchConfig: IDebugger<INodeLaunchConfiguration> = {
     },
     profileStartup: {
       type: 'boolean',
-      description: refString( 'node.profileStartup.description' ),
+      description: refString('node.profileStartup.description'),
       default: true,
     },
     attachSimplePort: {
       type: 'integer',
-      description: refString( 'node.attachSimplePort.description' ),
+      description: refString('node.attachSimplePort.description'),
       default: 9229,
     },
     killBehavior: {
       type: 'string',
-      enum: [ KillBehavior.Forceful, KillBehavior.Polite, KillBehavior.None ],
+      enum: [KillBehavior.Forceful, KillBehavior.Polite, KillBehavior.None],
       default: KillBehavior.Forceful,
-      markdownDescription: refString( 'node.killBehavior.description' ),
+      markdownDescription: refString('node.killBehavior.description'),
     },
   },
   defaults: nodeLaunchConfigDefaults,
@@ -650,12 +650,12 @@ const nodeLaunchConfig: IDebugger<INodeLaunchConfiguration> = {
 const nodeTerminalConfiguration: IDebugger<ITerminalLaunchConfiguration> = {
   type: DebugType.Terminal,
   request: 'launch',
-  label: refString( 'debug.terminal.label' ),
+  label: refString('debug.terminal.label'),
   languages: [],
   configurationSnippets: [
     {
-      label: refString( 'debug.terminal.snippet.label' ),
-      description: refString( 'debug.terminal.snippet.label' ),
+      label: refString('debug.terminal.snippet.label'),
+      description: refString('debug.terminal.snippet.label'),
       body: {
         type: DebugType.Terminal,
         request: 'launch',
@@ -667,8 +667,8 @@ const nodeTerminalConfiguration: IDebugger<ITerminalLaunchConfiguration> = {
   configurationAttributes: {
     ...nodeBaseConfigurationAttributes,
     command: {
-      type: [ 'string', 'null' ],
-      description: refString( 'debug.terminal.program.description' ),
+      type: ['string', 'null'],
+      description: refString('debug.terminal.program.description'),
       default: 'npm start',
     },
   },
@@ -682,51 +682,51 @@ const chromiumBaseConfigurationAttributes: ConfigurationAttributes<IChromiumBase
   ...baseConfigurationAttributes,
   disableNetworkCache: {
     type: 'boolean',
-    description: refString( 'browser.disableNetworkCache.description' ),
+    description: refString('browser.disableNetworkCache.description'),
     default: true,
   },
   pathMapping: {
     type: 'object',
-    description: refString( 'browser.pathMapping.description' ),
+    description: refString('browser.pathMapping.description'),
     default: {},
   },
   webRoot: {
     type: 'string',
-    description: refString( 'browser.webRoot.description' ),
+    description: refString('browser.webRoot.description'),
     default: '${workspaceFolder}',
   },
   urlFilter: {
     type: 'string',
-    description: refString( 'browser.urlFilter.description' ),
+    description: refString('browser.urlFilter.description'),
     default: '',
   },
   url: {
     type: 'string',
-    description: refString( 'browser.url.description' ),
+    description: refString('browser.url.description'),
     default: 'http://localhost:8080',
   },
   inspectUri: {
-    type: [ 'string', 'null' ],
-    description: refString( 'browser.inspectUri.description' ),
+    type: ['string', 'null'],
+    description: refString('browser.inspectUri.description'),
     default: null,
   },
   vueComponentPaths: {
     type: 'array',
-    description: refString( 'browser.vueComponentPaths' ),
-    default: [ '${workspaceFolder}/**/*.vue' ],
+    description: refString('browser.vueComponentPaths'),
+    default: ['${workspaceFolder}/**/*.vue'],
   },
   server: {
     oneOf: [
       {
         type: 'object',
-        description: refString( 'browser.server.description' ),
+        description: refString('browser.server.description'),
         additionalProperties: false,
         default: { program: 'node my-server.js' },
         properties: nodeLaunchConfig.configurationAttributes,
       },
       {
         type: 'object',
-        description: refString( 'debug.terminal.label' ),
+        description: refString('debug.terminal.label'),
         additionalProperties: false,
         default: { program: 'npm start' },
         properties: nodeTerminalConfiguration.configurationAttributes,
@@ -737,8 +737,8 @@ const chromiumBaseConfigurationAttributes: ConfigurationAttributes<IChromiumBase
   perScriptSourcemaps: {
     type: 'string',
     default: 'auto',
-    enum: [ 'yes', 'no', 'auto' ],
-    description: refString( 'browser.perScriptSourcemaps.description' ),
+    enum: ['yes', 'no', 'auto'],
+    description: refString('browser.perScriptSourcemaps.description'),
   },
 };
 
@@ -749,27 +749,27 @@ const chromiumAttachConfigurationAttributes: ConfigurationAttributes<IChromeAtta
   ...chromiumBaseConfigurationAttributes,
   address: {
     type: 'string',
-    description: refString( 'browser.address.description' ),
+    description: refString('browser.address.description'),
     default: 'localhost',
   },
   port: {
     type: 'number',
-    description: refString( 'browser.attach.port.description' ),
+    description: refString('browser.attach.port.description'),
     default: 9229,
   },
   restart: {
     type: 'boolean',
-    markdownDescription: refString( 'browser.restart' ),
+    markdownDescription: refString('browser.restart'),
     default: false,
   },
   targetSelection: {
     type: 'string',
-    markdownDescription: refString( 'browser.targetSelection' ),
-    enum: [ 'pick', 'automatic' ],
+    markdownDescription: refString('browser.targetSelection'),
+    enum: ['pick', 'automatic'],
     default: 'automatic',
   },
   browserAttachLocation: {
-    description: refString( 'browser.browserAttachLocation.description' ),
+    description: refString('browser.browserAttachLocation.description'),
     default: null,
     oneOf: [
       {
@@ -777,7 +777,7 @@ const chromiumAttachConfigurationAttributes: ConfigurationAttributes<IChromeAtta
       },
       {
         type: 'string',
-        enum: [ 'ui', 'workspace' ],
+        enum: ['ui', 'workspace'],
       },
     ],
   },
@@ -786,12 +786,12 @@ const chromiumAttachConfigurationAttributes: ConfigurationAttributes<IChromeAtta
 const chromeLaunchConfig: IDebugger<IChromeLaunchConfiguration> = {
   type: DebugType.Chrome,
   request: 'launch',
-  label: refString( 'chrome.label' ),
+  label: refString('chrome.label'),
   languages: browserLanguages,
   configurationSnippets: [
     {
-      label: refString( 'chrome.launch.label' ),
-      description: refString( 'chrome.launch.description' ),
+      label: refString('chrome.launch.label'),
+      description: refString('chrome.launch.description'),
       body: {
         type: DebugType.Chrome,
         request: 'launch',
@@ -805,37 +805,37 @@ const chromeLaunchConfig: IDebugger<IChromeLaunchConfiguration> = {
     ...chromiumBaseConfigurationAttributes,
     port: {
       type: 'number',
-      description: refString( 'browser.launch.port.description' ),
+      description: refString('browser.launch.port.description'),
       default: 0,
     },
     file: {
       type: 'string',
-      description: refString( 'browser.file.description' ),
+      description: refString('browser.file.description'),
       default: '${workspaceFolder}/index.html',
     },
     userDataDir: {
-      type: [ 'string', 'boolean' ],
-      description: refString( 'browser.userDataDir.description' ),
+      type: ['string', 'boolean'],
+      description: refString('browser.userDataDir.description'),
       default: true,
     },
     includeDefaultArgs: {
       type: 'boolean',
-      description: refString( 'browser.includeDefaultArgs.description' ),
+      description: refString('browser.includeDefaultArgs.description'),
       default: true,
     },
     includeLaunchArgs: {
       type: 'boolean',
-      description: refString( 'browser.includeLaunchArgs.description' ),
+      description: refString('browser.includeLaunchArgs.description'),
       default: true,
     },
     runtimeExecutable: {
-      type: [ 'string', 'null' ],
-      description: refString( 'browser.runtimeExecutable.description' ),
+      type: ['string', 'null'],
+      description: refString('browser.runtimeExecutable.description'),
       default: 'stable',
     },
     runtimeArgs: {
       type: 'array',
-      description: refString( 'browser.runtimeArgs.description' ),
+      description: refString('browser.runtimeArgs.description'),
       items: {
         type: 'string',
       },
@@ -843,27 +843,27 @@ const chromeLaunchConfig: IDebugger<IChromeLaunchConfiguration> = {
     },
     env: {
       type: 'object',
-      description: refString( 'browser.env.description' ),
+      description: refString('browser.env.description'),
       default: {},
     },
     cwd: {
       type: 'string',
-      description: refString( 'browser.cwd.description' ),
+      description: refString('browser.cwd.description'),
       default: null,
     },
     profileStartup: {
       type: 'boolean',
-      description: refString( 'browser.profileStartup.description' ),
+      description: refString('browser.profileStartup.description'),
       default: true,
     },
     cleanUp: {
       type: 'string',
-      enum: [ 'wholeBrowser', 'onlyTab' ],
-      description: refString( 'browser.cleanUp.description' ),
+      enum: ['wholeBrowser', 'onlyTab'],
+      description: refString('browser.cleanUp.description'),
       default: 'wholeBrowser',
     },
     browserLaunchLocation: {
-      description: refString( 'browser.browserLaunchLocation.description' ),
+      description: refString('browser.browserLaunchLocation.description'),
       default: null,
       oneOf: [
         {
@@ -871,7 +871,7 @@ const chromeLaunchConfig: IDebugger<IChromeLaunchConfiguration> = {
         },
         {
           type: 'string',
-          enum: [ 'ui', 'workspace' ],
+          enum: ['ui', 'workspace'],
         },
       ],
     },
@@ -882,12 +882,12 @@ const chromeLaunchConfig: IDebugger<IChromeLaunchConfiguration> = {
 const chromeAttachConfig: IDebugger<IChromeAttachConfiguration> = {
   type: DebugType.Chrome,
   request: 'attach',
-  label: refString( 'chrome.label' ),
+  label: refString('chrome.label'),
   languages: browserLanguages,
   configurationSnippets: [
     {
-      label: refString( 'chrome.attach.label' ),
-      description: refString( 'chrome.attach.description' ),
+      label: refString('chrome.attach.label'),
+      description: refString('chrome.attach.description'),
       body: {
         type: DebugType.Chrome,
         request: 'attach',
@@ -904,19 +904,19 @@ const chromeAttachConfig: IDebugger<IChromeAttachConfiguration> = {
 const extensionHostConfig: IDebugger<IExtensionHostLaunchConfiguration> = {
   type: DebugType.ExtensionHost,
   request: 'launch',
-  label: refString( 'extensionHost.label' ),
+  label: refString('extensionHost.label'),
   languages: commonLanguages,
-  required: [ 'args' ],
+  required: ['args'],
   configurationSnippets: [
     {
-      label: refString( 'extensionHost.snippet.launch.label' ),
-      description: refString( 'extensionHost.snippet.launch.description' ),
+      label: refString('extensionHost.snippet.launch.label'),
+      description: refString('extensionHost.snippet.launch.description'),
       body: {
         type: DebugType.ExtensionHost,
         request: 'launch',
-        name: refString( 'extensionHost.launch.config.name' ),
-        args: [ '^"--extensionDevelopmentPath=\\${workspaceFolder}"' ],
-        outFiles: [ '^"\\${workspaceFolder}/out/**/*.js"' ],
+        name: refString('extensionHost.launch.config.name'),
+        args: ['^"--extensionDevelopmentPath=\\${workspaceFolder}"'],
+        outFiles: ['^"\\${workspaceFolder}/out/**/*.js"'],
         preLaunchTask: 'npm',
       },
     },
@@ -925,34 +925,34 @@ const extensionHostConfig: IDebugger<IExtensionHostLaunchConfiguration> = {
     ...nodeBaseConfigurationAttributes,
     args: {
       type: 'array',
-      description: refString( 'node.launch.args.description' ),
+      description: refString('node.launch.args.description'),
       items: {
         type: 'string',
       },
-      default: [ '--extensionDevelopmentPath=${workspaceFolder}' ],
+      default: ['--extensionDevelopmentPath=${workspaceFolder}'],
     },
     runtimeExecutable: {
-      type: [ 'string', 'null' ],
-      markdownDescription: refString( 'extensionHost.launch.runtimeExecutable.description' ),
+      type: ['string', 'null'],
+      markdownDescription: refString('extensionHost.launch.runtimeExecutable.description'),
       default: 'node',
     },
     debugWebviews: {
-      markdownDescription: refString( 'extensionHost.launch.debugWebviews' ),
+      markdownDescription: refString('extensionHost.launch.debugWebviews'),
       default: true,
-      type: [ 'boolean' ],
+      type: ['boolean'],
     },
     debugWebWorkerHost: {
-      markdownDescription: refString( 'extensionHost.launch.debugWebWorkerHost' ),
+      markdownDescription: refString('extensionHost.launch.debugWebWorkerHost'),
       default: true,
-      type: [ 'boolean' ],
+      type: ['boolean'],
     },
     rendererDebugOptions: {
-      markdownDescription: refString( 'extensionHost.launch.rendererDebugOptions' ),
+      markdownDescription: refString('extensionHost.launch.rendererDebugOptions'),
       type: 'object',
       default: {
         webRoot: '${workspaceFolder}',
       },
-      properties: chromiumAttachConfigurationAttributes as { [ key: string ]: JSONSchema6 },
+      properties: chromiumAttachConfigurationAttributes as { [key: string]: JSONSchema6 },
     },
   },
   defaults: extensionHostConfigDefaults,
@@ -961,12 +961,12 @@ const extensionHostConfig: IDebugger<IExtensionHostLaunchConfiguration> = {
 const edgeLaunchConfig: IDebugger<IEdgeLaunchConfiguration> = {
   type: DebugType.Edge,
   request: 'launch',
-  label: refString( 'edge.label' ),
+  label: refString('edge.label'),
   languages: browserLanguages,
   configurationSnippets: [
     {
-      label: refString( 'edge.launch.label' ),
-      description: refString( 'edge.launch.description' ),
+      label: refString('edge.launch.label'),
+      description: refString('edge.launch.description'),
       body: {
         type: DebugType.Edge,
         request: 'launch',
@@ -979,23 +979,23 @@ const edgeLaunchConfig: IDebugger<IEdgeLaunchConfiguration> = {
   configurationAttributes: {
     ...chromeLaunchConfig.configurationAttributes,
     runtimeExecutable: {
-      type: [ 'string', 'null' ],
-      description: refString( 'browser.runtimeExecutable.edge.description' ),
+      type: ['string', 'null'],
+      description: refString('browser.runtimeExecutable.edge.description'),
       default: 'stable',
     },
     useWebView: {
       type: 'boolean',
-      description: refString( 'edge.useWebView.launch.description' ),
+      description: refString('edge.useWebView.launch.description'),
       default: false,
     },
     address: {
       type: 'string',
-      description: refString( 'edge.address.description' ),
+      description: refString('edge.address.description'),
       default: 'localhost',
     },
     port: {
       type: 'number',
-      description: refString( 'edge.port.description' ),
+      description: refString('edge.port.description'),
       default: 9229,
     },
   },
@@ -1005,12 +1005,12 @@ const edgeLaunchConfig: IDebugger<IEdgeLaunchConfiguration> = {
 const edgeAttachConfig: IDebugger<IEdgeAttachConfiguration> = {
   type: DebugType.Edge,
   request: 'attach',
-  label: refString( 'edge.label' ),
+  label: refString('edge.label'),
   languages: browserLanguages,
   configurationSnippets: [
     {
-      label: refString( 'edge.attach.label' ),
-      description: refString( 'edge.attach.description' ),
+      label: refString('edge.attach.label'),
+      description: refString('edge.attach.description'),
       body: {
         type: DebugType.Edge,
         request: 'attach',
@@ -1025,7 +1025,7 @@ const edgeAttachConfig: IDebugger<IEdgeAttachConfiguration> = {
     useWebView: {
       type: 'object',
       properties: { pipeName: { type: 'string' } },
-      description: refString( 'edge.useWebView.attach.description' ),
+      description: refString('edge.useWebView.attach.description'),
       default: { pipeName: 'MyPipeName' },
     },
   },
@@ -1043,12 +1043,12 @@ export const debuggers = [
   edgeAttachConfig,
 ];
 
-function buildDebuggers () {
+function buildDebuggers() {
   // eslint-disable-next-line
   const output: any[] = [];
-  const ensureEntryForType = ( type: string, d: typeof debuggers[ 0 ] ) => {
-    let entry = output.find( o => o.type === type );
-    if ( entry ) {
+  const ensureEntryForType = (type: string, d: typeof debuggers[0]) => {
+    let entry = output.find(o => o.type === type);
+    if (entry) {
       return entry;
     }
 
@@ -1060,69 +1060,69 @@ function buildDebuggers () {
       aiKey: appInsightsKey,
       configurationAttributes: {},
       configurationSnippets: [],
-      strings: { unverifiedBreakpoints: refString( 'debug.unverifiedBreakpoints' ) },
+      strings: { unverifiedBreakpoints: refString('debug.unverifiedBreakpoints') },
     };
-    output.push( entry );
+    output.push(entry);
     return entry;
   };
 
-  for ( const d of debuggers ) {
-    const preferred = preferredDebugTypes.get( d.type );
-    const primary = ensureEntryForType( d.type, d );
-    const entries = [ primary ];
-    if ( preferred ) {
-      const entry = ensureEntryForType( preferred, d );
+  for (const d of debuggers) {
+    const preferred = preferredDebugTypes.get(d.type);
+    const primary = ensureEntryForType(d.type, d);
+    const entries = [primary];
+    if (preferred) {
+      const entry = ensureEntryForType(preferred, d);
       delete entry.languages;
-      entries.unshift( entry );
-      primary.deprecated = `Please use type ${ preferred } instead`;
+      entries.unshift(entry);
+      primary.deprecated = `Please use type ${preferred} instead`;
     }
 
-    entries[ 0 ].configurationSnippets.push( ...d.configurationSnippets );
+    entries[0].configurationSnippets.push(...d.configurationSnippets);
 
-    if ( preferred ) {
-      for ( const snippet of entries[ 0 ].configurationSnippets ) {
+    if (preferred) {
+      for (const snippet of entries[0].configurationSnippets) {
         snippet.body.type = preferred;
       }
     }
 
-    for ( const entry of entries ) {
-      entry.configurationAttributes[ d.request ] = {
+    for (const entry of entries) {
+      entry.configurationAttributes[d.request] = {
         required: d.required,
         properties: mapValues(
-          d.configurationAttributes as { [ key: string ]: DescribedAttribute<unknown> },
-          ( { docDefault: _, ...attrs } ) => attrs,
+          d.configurationAttributes as { [key: string]: DescribedAttribute<unknown> },
+          ({ docDefault: _, ...attrs }) => attrs,
         ),
       };
     }
   }
 
-  return walkObject( output, sortKeys );
+  return walkObject(output, sortKeys);
 }
 
 const configurationSchema: ConfigurationAttributes<IConfigurationTypes> = {
-  [ Configuration.NpmScriptLens ]: {
-    enum: [ 'top', 'all', 'never' ],
+  [Configuration.NpmScriptLens]: {
+    enum: ['top', 'all', 'never'],
     default: 'top',
-    description: refString( 'configuration.npmScriptLensLocation' ),
+    description: refString('configuration.npmScriptLensLocation'),
   },
-  [ Configuration.TerminalDebugConfig ]: {
+  [Configuration.TerminalDebugConfig]: {
     type: 'object',
-    description: refString( 'configuration.terminalOptions' ),
+    description: refString('configuration.terminalOptions'),
     default: {},
-    properties: nodeTerminalConfiguration.configurationAttributes as { [ key: string ]: JSONSchema6 },
+    properties: nodeTerminalConfiguration.configurationAttributes as { [key: string]: JSONSchema6 },
   },
-  [ Configuration.AutoServerTunnelOpen ]: {
+  [Configuration.AutoServerTunnelOpen]: {
     type: 'boolean',
-    description: refString( 'configuration.automaticallyTunnelRemoteServer' ),
+    description: refString('configuration.automaticallyTunnelRemoteServer'),
     default: true,
   },
-  [ Configuration.DebugByLinkOptions ]: {
+  [Configuration.DebugByLinkOptions]: {
     default: 'on',
-    description: refString( 'configuration.debugByLinkOptions' ),
+    description: refString('configuration.debugByLinkOptions'),
     oneOf: [
       {
         type: 'string',
-        enum: [ 'on', 'off', 'always' ],
+        enum: ['on', 'off', 'always'],
       },
       {
         type: 'object',
@@ -1130,19 +1130,19 @@ const configurationSchema: ConfigurationAttributes<IConfigurationTypes> = {
           ...chromeLaunchConfig.configurationAttributes,
           enabled: {
             type: 'string',
-            enum: [ 'on', 'off', 'always' ],
+            enum: ['on', 'off', 'always'],
           },
-        } as { [ key: string ]: JSONSchema6 },
+        } as { [key: string]: JSONSchema6 },
       },
     ],
   },
-  [ Configuration.PickAndAttachDebugOptions ]: {
+  [Configuration.PickAndAttachDebugOptions]: {
     type: 'object',
     default: {},
-    markdownDescription: refString( 'configuration.pickAndAttachOptions' ),
-    properties: nodeAttachConfig.configurationAttributes as { [ key: string ]: JSONSchema6 },
+    markdownDescription: refString('configuration.pickAndAttachOptions'),
+    properties: nodeAttachConfig.configurationAttributes as { [key: string]: JSONSchema6 },
   },
-  [ Configuration.AutoAttachMode ]: {
+  [Configuration.AutoAttachMode]: {
     type: 'string',
     default: AutoAttachMode.Disabled,
     enum: [
@@ -1152,46 +1152,46 @@ const configurationSchema: ConfigurationAttributes<IConfigurationTypes> = {
       AutoAttachMode.Disabled,
     ],
     enumDescriptions: [
-      refString( 'configuration.autoAttachMode.always' ),
-      refString( 'configuration.autoAttachMode.smart' ),
-      refString( 'configuration.autoAttachMode.explicit' ),
-      refString( 'configuration.autoAttachMode.disabled' ),
+      refString('configuration.autoAttachMode.always'),
+      refString('configuration.autoAttachMode.smart'),
+      refString('configuration.autoAttachMode.explicit'),
+      refString('configuration.autoAttachMode.disabled'),
     ],
-    markdownDescription: refString( 'configuration.autoAttachMode' ),
+    markdownDescription: refString('configuration.autoAttachMode'),
   },
-  [ Configuration.AutoAttachSmartPatterns ]: {
+  [Configuration.AutoAttachSmartPatterns]: {
     type: 'array',
     items: {
       type: 'string',
     },
-    default: [ '${workspaceFolder}/**', '!**/node_modules/**', `**/${ knownToolToken }/**` ],
-    markdownDescription: refString( 'configuration.autoAttachSmartPatterns' ),
+    default: ['${workspaceFolder}/**', '!**/node_modules/**', `**/${knownToolToken}/**`],
+    markdownDescription: refString('configuration.autoAttachSmartPatterns'),
   },
-  [ Configuration.BreakOnConditionalError ]: {
+  [Configuration.BreakOnConditionalError]: {
     type: 'boolean',
     default: false,
-    markdownDescription: refString( 'configuration.breakOnConditionalError' ),
+    markdownDescription: refString('configuration.breakOnConditionalError'),
   },
-  [ Configuration.UnmapMissingSources ]: {
+  [Configuration.UnmapMissingSources]: {
     type: 'boolean',
     default: false,
-    description: refString( 'configuration.unmapMissingSources' ),
+    description: refString('configuration.unmapMissingSources'),
   },
-  [ Configuration.DefaultRuntimeExecutables ]: {
+  [Configuration.DefaultRuntimeExecutables]: {
     type: 'object',
     default: {
-      [ DebugType.Node ]: 'node',
+      [DebugType.Node]: 'node',
     },
-    markdownDescription: refString( 'configuration.defaultRuntimeExecutables' ),
-    properties: [ DebugType.Node, DebugType.Chrome, DebugType.Edge ].reduce(
-      ( obj, type ) => ( { ...obj, [ type ]: { type: 'string' } } ),
+    markdownDescription: refString('configuration.defaultRuntimeExecutables'),
+    properties: [DebugType.Node, DebugType.Chrome, DebugType.Edge].reduce(
+      (obj, type) => ({ ...obj, [type]: { type: 'string' } }),
       {},
     ),
   },
-  [ Configuration.ResourceRequestOptions ]: {
+  [Configuration.ResourceRequestOptions]: {
     type: 'object',
     default: {},
-    markdownDescription: refString( 'configuration.resourceRequestOptions' ),
+    markdownDescription: refString('configuration.resourceRequestOptions'),
   },
 };
 
@@ -1201,168 +1201,168 @@ const commands: ReadonlyArray<{
   category?: string;
   icon?: string;
 }> = [
-    {
-      command: Commands.OpenBrowserElements,
-      title: refString( 'open.browserElements' ),
-      "icon": "$(code)",
-    },
-    {
-      command: Commands.PrettyPrint,
-      title: refString( 'pretty.print.script' ),
-      category: 'Debug',
-      icon: '$(json)',
-    },
-    {
-      command: Commands.ToggleSkipping,
-      title: refString( 'toggle.skipping.this.file' ),
-      category: 'Debug',
-    },
-    {
-      command: Commands.AddCustomBreakpoints,
-      title: refString( 'add.eventListener.breakpoint' ),
-      icon: '$(add)',
-    },
-    {
-      command: Commands.RemoveCustomBreakpoints,
-      title: refString( 'remove.eventListener.breakpoint' ),
-      icon: '$(remove)',
-    },
-    {
-      command: Commands.RemoveAllCustomBreakpoints,
-      title: refString( 'remove.eventListener.breakpoint.all' ),
-      icon: '$(close-all)',
-    },
-    {
-      command: Commands.AddXHRBreakpoints,
-      title: refString( 'add.xhr.breakpoint' ),
-      icon: '$(add)',
-    },
-    {
-      command: Commands.EditXHRBreakpoint,
-      title: refString( 'edit.xhr.breakpoint' ),
-      icon: '$(edit)',
-    },
-    {
-      command: Commands.RemoveXHRBreakpoints,
-      title: refString( 'remove.xhr.breakpoint' ),
-      icon: '$(remove)',
-    },
-    {
-      command: Commands.RemoveAllXHRBreakpoints,
-      title: refString( 'remove.xhr.breakpoint.all' ),
-      icon: '$(close-all)',
-    },
-    {
-      command: Commands.AttachProcess,
-      title: refString( 'attach.node.process' ),
-      category: 'Debug',
-    },
-    {
-      command: Commands.DebugNpmScript,
-      title: refString( 'debug.npm.script' ),
-      category: 'Debug',
-    },
-    {
-      command: Commands.CreateDebuggerTerminal,
-      title: refString( 'debug.terminal.label' ),
-      category: 'Debug',
-    },
-    {
-      command: Commands.StartProfile,
-      title: refString( 'profile.start' ),
-      category: 'Debug',
-      icon: '$(record)',
-    },
-    {
-      command: Commands.StopProfile,
-      title: refString( 'profile.stop' ),
-      category: 'Debug',
-      icon: 'resources/dark/stop-profiling.svg',
-    },
-    {
-      command: Commands.RevealPage,
-      title: refString( 'browser.revealPage' ),
-      category: 'Debug',
-    },
-    {
-      command: Commands.DebugLink,
-      title: refString( 'debugLink.label' ),
-      category: 'Debug',
-    },
-    {
-      command: Commands.CreateDiagnostics,
-      title: refString( 'createDiagnostics.label' ),
-      category: 'Debug',
-    },
-    {
-      command: Commands.GetDiagnosticLogs,
-      title: refString( 'getDiagnosticLogs.label' ),
-      category: 'Debug',
-    },
-    {
-      command: Commands.StartWithStopOnEntry,
-      title: refString( 'startWithStopOnEntry.label' ),
-      category: 'Debug',
-    },
-    {
-      command: Commands.OpenEdgeDevTools,
-      title: refString( 'openEdgeDevTools.label' ),
-      icon: '$(inspect)',
-      category: 'Debug',
-    },
-    {
-      command: Commands.CallersAdd,
-      title: refString( 'commands.callersAdd.label' ),
-      category: 'Debug',
-    },
-    {
-      command: Commands.CallersRemove,
-      title: refString( 'commands.callersRemove.label' ),
-      icon: '$(close)',
-    },
-    {
-      command: Commands.CallersRemoveAll,
-      title: refString( 'commands.callersRemoveAll.label' ),
-      icon: '$(clear-all)',
-    },
-    {
-      command: Commands.CallersGoToCaller,
-      title: refString( 'commands.callersGoToCaller.label' ),
-      icon: '$(call-outgoing)',
-    },
-    {
-      command: Commands.CallersGoToTarget,
-      title: refString( 'commands.callersGoToTarget.label' ),
-      icon: '$(call-incoming)',
-    },
-    {
-      command: Commands.EnableSourceMapStepping,
-      title: refString( 'commands.enableSourceMapStepping.label' ),
-      icon: '$(compass-dot)',
-    },
-    {
-      command: Commands.DisableSourceMapStepping,
-      title: refString( 'commands.disableSourceMapStepping.label' ),
-      icon: '$(compass)',
-    },
-  ];
+  {
+    command: Commands.OpenBrowserElements,
+    title: refString('open.browserElements'),
+    icon: '$(code)',
+  },
+  {
+    command: Commands.PrettyPrint,
+    title: refString('pretty.print.script'),
+    category: 'Debug',
+    icon: '$(json)',
+  },
+  {
+    command: Commands.ToggleSkipping,
+    title: refString('toggle.skipping.this.file'),
+    category: 'Debug',
+  },
+  {
+    command: Commands.AddCustomBreakpoints,
+    title: refString('add.eventListener.breakpoint'),
+    icon: '$(add)',
+  },
+  {
+    command: Commands.RemoveCustomBreakpoints,
+    title: refString('remove.eventListener.breakpoint'),
+    icon: '$(remove)',
+  },
+  {
+    command: Commands.RemoveAllCustomBreakpoints,
+    title: refString('remove.eventListener.breakpoint.all'),
+    icon: '$(close-all)',
+  },
+  {
+    command: Commands.AddXHRBreakpoints,
+    title: refString('add.xhr.breakpoint'),
+    icon: '$(add)',
+  },
+  {
+    command: Commands.EditXHRBreakpoint,
+    title: refString('edit.xhr.breakpoint'),
+    icon: '$(edit)',
+  },
+  {
+    command: Commands.RemoveXHRBreakpoints,
+    title: refString('remove.xhr.breakpoint'),
+    icon: '$(remove)',
+  },
+  {
+    command: Commands.RemoveAllXHRBreakpoints,
+    title: refString('remove.xhr.breakpoint.all'),
+    icon: '$(close-all)',
+  },
+  {
+    command: Commands.AttachProcess,
+    title: refString('attach.node.process'),
+    category: 'Debug',
+  },
+  {
+    command: Commands.DebugNpmScript,
+    title: refString('debug.npm.script'),
+    category: 'Debug',
+  },
+  {
+    command: Commands.CreateDebuggerTerminal,
+    title: refString('debug.terminal.label'),
+    category: 'Debug',
+  },
+  {
+    command: Commands.StartProfile,
+    title: refString('profile.start'),
+    category: 'Debug',
+    icon: '$(record)',
+  },
+  {
+    command: Commands.StopProfile,
+    title: refString('profile.stop'),
+    category: 'Debug',
+    icon: 'resources/dark/stop-profiling.svg',
+  },
+  {
+    command: Commands.RevealPage,
+    title: refString('browser.revealPage'),
+    category: 'Debug',
+  },
+  {
+    command: Commands.DebugLink,
+    title: refString('debugLink.label'),
+    category: 'Debug',
+  },
+  {
+    command: Commands.CreateDiagnostics,
+    title: refString('createDiagnostics.label'),
+    category: 'Debug',
+  },
+  {
+    command: Commands.GetDiagnosticLogs,
+    title: refString('getDiagnosticLogs.label'),
+    category: 'Debug',
+  },
+  {
+    command: Commands.StartWithStopOnEntry,
+    title: refString('startWithStopOnEntry.label'),
+    category: 'Debug',
+  },
+  {
+    command: Commands.OpenEdgeDevTools,
+    title: refString('openEdgeDevTools.label'),
+    icon: '$(inspect)',
+    category: 'Debug',
+  },
+  {
+    command: Commands.CallersAdd,
+    title: refString('commands.callersAdd.label'),
+    category: 'Debug',
+  },
+  {
+    command: Commands.CallersRemove,
+    title: refString('commands.callersRemove.label'),
+    icon: '$(close)',
+  },
+  {
+    command: Commands.CallersRemoveAll,
+    title: refString('commands.callersRemoveAll.label'),
+    icon: '$(clear-all)',
+  },
+  {
+    command: Commands.CallersGoToCaller,
+    title: refString('commands.callersGoToCaller.label'),
+    icon: '$(call-outgoing)',
+  },
+  {
+    command: Commands.CallersGoToTarget,
+    title: refString('commands.callersGoToTarget.label'),
+    icon: '$(call-incoming)',
+  },
+  {
+    command: Commands.EnableSourceMapStepping,
+    title: refString('commands.enableSourceMapStepping.label'),
+    icon: '$(compass-dot)',
+  },
+  {
+    command: Commands.DisableSourceMapStepping,
+    title: refString('commands.disableSourceMapStepping.label'),
+    icon: '$(compass)',
+  },
+];
 
 const menus: Menus = {
   commandPalette: [
     {
       command: Commands.PrettyPrint,
-      title: refString( 'pretty.print.script' ),
-      when: forAnyDebugType( 'debugType', 'debugState == stopped' ),
+      title: refString('pretty.print.script'),
+      when: forAnyDebugType('debugType', 'debugState == stopped'),
     },
     {
       command: Commands.StartProfile,
-      title: refString( 'profile.start' ),
-      when: forAnyDebugType( 'debugType', 'inDebugMode && !jsDebugIsProfiling' ),
+      title: refString('profile.start'),
+      when: forAnyDebugType('debugType', 'inDebugMode && !jsDebugIsProfiling'),
     },
     {
       command: Commands.StopProfile,
-      title: refString( 'profile.stop' ),
-      when: forAnyDebugType( 'debugType', 'inDebugMode && jsDebugIsProfiling' ),
+      title: refString('profile.stop'),
+      when: forAnyDebugType('debugType', 'inDebugMode && jsDebugIsProfiling'),
     },
     {
       command: Commands.RevealPage,
@@ -1370,28 +1370,28 @@ const menus: Menus = {
     },
     {
       command: Commands.DebugLink,
-      title: refString( 'debugLink.label' ),
+      title: refString('debugLink.label'),
       when: '!isWeb',
     },
     {
       command: Commands.CreateDiagnostics,
-      title: refString( 'createDiagnostics.label' ),
-      when: forAnyDebugType( 'debugType', 'inDebugMode' ),
+      title: refString('createDiagnostics.label'),
+      when: forAnyDebugType('debugType', 'inDebugMode'),
     },
     {
       command: Commands.GetDiagnosticLogs,
-      title: refString( 'getDiagnosticLogs.label' ),
-      when: forAnyDebugType( 'debugType', 'inDebugMode' ),
+      title: refString('getDiagnosticLogs.label'),
+      when: forAnyDebugType('debugType', 'inDebugMode'),
     },
     {
       command: Commands.OpenEdgeDevTools,
-      title: refString( 'openEdgeDevTools.label' ),
-      when: `debugType == ${ DebugType.Edge }`,
+      title: refString('openEdgeDevTools.label'),
+      when: `debugType == ${DebugType.Edge}`,
     },
     {
       command: Commands.CallersAdd,
-      title: refString( 'commands.callersAdd.paletteLabel' ),
-      when: forAnyDebugType( 'debugType', 'debugState == "stopped"' ),
+      title: refString('commands.callersAdd.paletteLabel'),
+      when: forAnyDebugType('debugType', 'debugState == "stopped"'),
     },
     {
       command: Commands.CallersGoToCaller,
@@ -1407,53 +1407,53 @@ const menus: Menus = {
     },
     {
       command: Commands.DisableSourceMapStepping,
-      when: `!${ ContextKey.IsMapSteppingDisabled }`,
+      when: `!${ContextKey.IsMapSteppingDisabled}`,
     },
   ],
   'debug/callstack/context': [
     {
       command: Commands.RevealPage,
       group: 'navigation',
-      when: forBrowserDebugType( 'debugType', `callStackItemType == 'session'` ),
+      when: forBrowserDebugType('debugType', `callStackItemType == 'session'`),
     },
     {
       command: Commands.ToggleSkipping,
       group: 'navigation',
-      when: forAnyDebugType( 'debugType', `callStackItemType == 'session'` ),
+      when: forAnyDebugType('debugType', `callStackItemType == 'session'`),
     },
     {
       command: Commands.StartProfile,
       group: 'navigation',
-      when: forAnyDebugType( 'debugType', `!jsDebugIsProfiling && callStackItemType == 'session'` ),
+      when: forAnyDebugType('debugType', `!jsDebugIsProfiling && callStackItemType == 'session'`),
     },
     {
       command: Commands.StopProfile,
       group: 'navigation',
-      when: forAnyDebugType( 'debugType', `jsDebugIsProfiling && callStackItemType == 'session'` ),
+      when: forAnyDebugType('debugType', `jsDebugIsProfiling && callStackItemType == 'session'`),
     },
     {
       command: Commands.StartProfile,
       group: 'inline',
-      when: forAnyDebugType( 'debugType', '!jsDebugIsProfiling' ),
+      when: forAnyDebugType('debugType', '!jsDebugIsProfiling'),
     },
     {
       command: Commands.StopProfile,
       group: 'inline',
-      when: forAnyDebugType( 'debugType', 'jsDebugIsProfiling' ),
+      when: forAnyDebugType('debugType', 'jsDebugIsProfiling'),
     },
     {
       command: Commands.CallersAdd,
-      when: forAnyDebugType( 'debugType', `callStackItemType == 'stackFrame'` ),
+      when: forAnyDebugType('debugType', `callStackItemType == 'stackFrame'`),
     },
   ],
   'debug/toolBar': [
     {
       command: Commands.StopProfile,
-      when: forAnyDebugType( 'debugType', 'jsDebugIsProfiling' ),
+      when: forAnyDebugType('debugType', 'jsDebugIsProfiling'),
     },
     {
       command: Commands.OpenEdgeDevTools,
-      when: `debugType == ${ DebugType.Edge }`,
+      when: `debugType == ${DebugType.Edge}`,
     },
     {
       command: Commands.EnableSourceMapStepping,
@@ -1463,35 +1463,35 @@ const menus: Menus = {
   'view/title': [
     {
       command: Commands.AddCustomBreakpoints,
-      when: `view == ${ CustomViews.EventListenerBreakpoints }`,
+      when: `view == ${CustomViews.EventListenerBreakpoints}`,
       group: 'navigation',
     },
     {
       command: Commands.RemoveAllCustomBreakpoints,
-      when: `view == ${ CustomViews.EventListenerBreakpoints }`,
+      when: `view == ${CustomViews.EventListenerBreakpoints}`,
       group: 'navigation',
     },
     {
       command: Commands.AddXHRBreakpoints,
-      when: `view == ${ CustomViews.XHRFetchBreakpoints }`,
+      when: `view == ${CustomViews.XHRFetchBreakpoints}`,
       group: 'navigation',
     },
     {
       command: Commands.RemoveAllXHRBreakpoints,
-      when: `view == ${ CustomViews.XHRFetchBreakpoints }`,
+      when: `view == ${CustomViews.XHRFetchBreakpoints}`,
       group: 'navigation',
     },
     {
       command: Commands.CallersRemoveAll,
       group: 'navigation',
-      when: `view == ${ CustomViews.ExcludedCallers }`,
+      when: `view == ${CustomViews.ExcludedCallers}`,
     },
     {
       command: Commands.DisableSourceMapStepping,
       group: 'navigation',
       when: forAnyDebugType(
         'debugType',
-        `view == workbench.debug.callStackView && !${ ContextKey.IsMapSteppingDisabled }`,
+        `view == workbench.debug.callStackView && !${ContextKey.IsMapSteppingDisabled}`,
       ),
     },
     {
@@ -1499,68 +1499,68 @@ const menus: Menus = {
       group: 'navigation',
       when: forAnyDebugType(
         'debugType',
-        `view == workbench.debug.callStackView && ${ ContextKey.IsMapSteppingDisabled }`,
+        `view == workbench.debug.callStackView && ${ContextKey.IsMapSteppingDisabled}`,
       ),
     },
   ],
   'view/item/context': [
     {
       command: Commands.AddXHRBreakpoints,
-      when: `view == ${ CustomViews.XHRFetchBreakpoints }`,
+      when: `view == ${CustomViews.XHRFetchBreakpoints}`,
     },
     {
       command: Commands.EditXHRBreakpoint,
-      when: `view == ${ CustomViews.XHRFetchBreakpoints }`,
+      when: `view == ${CustomViews.XHRFetchBreakpoints}`,
       group: 'inline',
     },
     {
       command: Commands.EditXHRBreakpoint,
-      when: `view == ${ CustomViews.XHRFetchBreakpoints }`,
+      when: `view == ${CustomViews.XHRFetchBreakpoints}`,
     },
     {
       command: Commands.RemoveXHRBreakpoints,
-      when: `view == ${ CustomViews.XHRFetchBreakpoints }`,
+      when: `view == ${CustomViews.XHRFetchBreakpoints}`,
       group: 'inline',
     },
     {
       command: Commands.RemoveXHRBreakpoints,
-      when: `view == ${ CustomViews.XHRFetchBreakpoints }`,
+      when: `view == ${CustomViews.XHRFetchBreakpoints}`,
     },
     {
       command: Commands.RemoveAllXHRBreakpoints,
-      when: `view == ${ CustomViews.XHRFetchBreakpoints }`,
+      when: `view == ${CustomViews.XHRFetchBreakpoints}`,
     },
 
     {
       command: Commands.CallersGoToCaller,
       group: 'inline',
-      when: `view == ${ CustomViews.ExcludedCallers }`,
+      when: `view == ${CustomViews.ExcludedCallers}`,
     },
     {
       command: Commands.CallersGoToTarget,
       group: 'inline',
-      when: `view == ${ CustomViews.ExcludedCallers }`,
+      when: `view == ${CustomViews.ExcludedCallers}`,
     },
     {
       command: Commands.CallersRemove,
       group: 'inline',
-      when: `view == ${ CustomViews.ExcludedCallers }`,
+      when: `view == ${CustomViews.ExcludedCallers}`,
     },
   ],
   'editor/title': [
     {
       command: Commands.PrettyPrint,
       group: 'navigation',
-      when: `debugState == stopped && resource in ${ ContextKey.CanPrettyPrint }`,
+      when: `debugState == stopped && resource in ${ContextKey.CanPrettyPrint}`,
     },
     {
-      "command": Commands.OpenBrowserElements,
+      command: Commands.OpenBrowserElements,
       // "when": forBrowserDebugType( 'debugType', `inDebugMode && resource == debug.currentFile` ),
-      "when": `resource in ${ ContextKey.CurrentFile } && inDebugMode`,
+      when: `resource in ${ContextKey.CurrentFile} && inDebugMode`,
 
       // "when": "(resourceExtname == '.resx' || resourceExtname == '.resw') && debugState == started && && activeCustomEditorId != 'resx-editor.editor'",
-      "group": "navigation"
-    }
+      group: 'navigation',
+    },
   ],
 };
 
@@ -1569,7 +1569,7 @@ const keybindings = [
     command: Commands.StartWithStopOnEntry,
     key: 'F10',
     mac: 'F10',
-    when: forNodeDebugType( 'debugConfigurationType', '!inDebugMode' ),
+    when: forNodeDebugType('debugConfigurationType', '!inDebugMode'),
   },
   {
     command: Commands.StartWithStopOnEntry,
@@ -1583,27 +1583,27 @@ const keybindings = [
 ];
 
 const viewsContainers = {
-  "activitybar": [
+  activitybar: [
     {
-      "id": "browserElements",
-      "title": "Elements",
-      "icon": "$(code)",
-      "when": forBrowserDebugType( 'debugType', "debugState == started" )
-    }
-  ]
+      id: 'browserElements',
+      title: 'Elements',
+      icon: '$(code)',
+      when: forBrowserDebugType('debugType', 'debugState == started'),
+    },
+  ],
 };
 
 const viewsWelcome = [
   {
     view: 'debug',
-    contents: refString( 'debug.terminal.welcomeWithLink' ),
-    when: forSomeContextKeys( commonLanguages, 'debugStartLanguage', '!isWeb' ),
+    contents: refString('debug.terminal.welcomeWithLink'),
+    when: forSomeContextKeys(commonLanguages, 'debugStartLanguage', '!isWeb'),
   },
   {
     view: 'debug',
-    contents: refString( 'debug.terminal.welcome' ),
-    when: forSomeContextKeys( commonLanguages, 'debugStartLanguage', 'isWeb' ),
-  }
+    contents: refString('debug.terminal.welcome'),
+    when: forSomeContextKeys(commonLanguages, 'debugStartLanguage', 'isWeb'),
+  },
 ];
 
 const views = {
@@ -1611,71 +1611,71 @@ const views = {
     {
       id: CustomViews.BrowserElementsStyles,
       name: 'Styles',
-      when: forBrowserDebugType( 'debugType' ),
+      when: forBrowserDebugType('debugType'),
     },
     {
       id: CustomViews.BrowserElementsComputed,
       name: 'Computed',
-      when: forBrowserDebugType( 'debugType' ),
+      when: forBrowserDebugType('debugType'),
     },
     {
       id: CustomViews.BrowserElementsLayout,
       name: 'Layout',
-      when: forBrowserDebugType( 'debugType' ),
+      when: forBrowserDebugType('debugType'),
     },
     {
       id: CustomViews.BrowserElementsProperties,
       name: 'Properties',
-      when: forBrowserDebugType( 'debugType' ),
+      when: forBrowserDebugType('debugType'),
     },
   ],
   debug: [
     {
       id: CustomViews.EventListenerBreakpoints,
       name: 'Event Listener Breakpoints',
-      when: forBrowserDebugType( 'debugType' ),
+      when: forBrowserDebugType('debugType'),
     },
     {
       id: CustomViews.XHRFetchBreakpoints,
       name: 'XHR/Fetch Breakpoints',
-      when: forBrowserDebugType( 'debugType' ),
+      when: forBrowserDebugType('debugType'),
     },
     {
       id: CustomViews.ExcludedCallers,
       name: 'Excluded Callers',
-      when: forAnyDebugType( 'debugType', 'jsDebugHasExcludedCallers' ),
+      when: forAnyDebugType('debugType', 'jsDebugHasExcludedCallers'),
     },
   ],
 };
 
-const activationEvents = new Set( [
+const activationEvents = new Set([
   'onDebugDynamicConfigurations',
   'onDebugInitialConfigurations',
-  ...[ ...debuggers.map( dbg => dbg.type ), ...preferredDebugTypes.values() ].map(
-    t => `onDebugResolve:${ t }`,
+  ...[...debuggers.map(dbg => dbg.type), ...preferredDebugTypes.values()].map(
+    t => `onDebugResolve:${t}`,
   ),
-  ...[ ...allCommands ].map( cmd => `onCommand:${ cmd }` ),
-] );
+  ...[...allCommands].map(cmd => `onCommand:${cmd}`),
+]);
 
 // remove implicit commands:
-for ( const { command } of commands ) {
-  activationEvents.delete( `onCommand:${ command }` );
+for (const { command } of commands) {
+  activationEvents.delete(`onCommand:${command}`);
 }
 
-if ( require.main === module ) {
+if (require.main === module) {
   process.stdout.write(
-    JSON.stringify( {
+    JSON.stringify({
       capabilities: {
         virtualWorkspaces: false,
         untrustedWorkspaces: {
           supported: 'limited',
-          description: refString( 'workspaceTrust.description' ),
+          description: refString('workspaceTrust.description'),
         },
       },
-      activationEvents: [ ...activationEvents ],
+      activationEvents: [...activationEvents],
       contributes: {
         menus,
-        breakpoints: breakpointLanguages.map( language => ( { language } ) ),
+        breakpoints: breakpointLanguages.map(language => ({ language })),
         debuggers: buildDebuggers(),
         commands,
         keybindings,
@@ -1693,25 +1693,25 @@ if ( require.main === module ) {
         languages: [
           {
             id: 'wat',
-            extensions: [ '.wat', '.wasm' ],
-            aliases: [ 'WebAssembly Text Format' ],
+            extensions: ['.wat', '.wasm'],
+            aliases: ['WebAssembly Text Format'],
             firstLine: '^\\(module',
-            mimetypes: [ 'text/wat' ],
+            mimetypes: ['text/wat'],
           },
         ],
         terminal: {
           profiles: [
             {
               id: 'extension.js-debug.debugTerminal',
-              title: refString( 'debug.terminal.label' ),
+              title: refString('debug.terminal.label'),
               icon: '$(debug)',
             },
           ],
         },
         views,
         viewsWelcome,
-        viewsContainers
+        viewsContainers,
       },
-    } ),
+    }),
   );
 }

@@ -1,16 +1,17 @@
+/*---------------------------------------------------------
+ * Copyright (C) Microsoft Corporation. All rights reserved.
+ *--------------------------------------------------------*/
 import { inject, injectable } from 'inversify';
-import * as vscode from 'vscode';
 import Cdp from '../../cdp/api';
 import { ContextKey } from '../../common/contributionUtils';
 import { DisposableList } from '../../common/disposable';
-import { ExtensionContext, FS, FsPromises } from '../../ioc-extras';
-import { DebugSessionTracker } from '../../ui/debugSessionTracker';
+import { FS, FsPromises } from '../../ioc-extras';
 import { ManagedContextKey } from '../../ui/managedContextKey';
 import { elementsPath, elementsStylePath } from './webview';
 
 @injectable()
 export class Elements {
-  private readonly currentFileKey = new ManagedContextKey( ContextKey.CurrentFile );
+  private readonly currentFileKey = new ManagedContextKey(ContextKey.CurrentFile);
   // private panel?: vscode.WebviewPanel;
   // private session?: vscode.DebugSession
   private readonly disposable = new DisposableList();
@@ -18,26 +19,21 @@ export class Elements {
 
   private hasPageLoaded = false;
 
-  private panel?: vscode.WebviewPanel;
-  private session?: vscode.DebugSession
+  // private panel?: vscode.WebviewPanel;
+  // private session?: vscode.DebugSession;
 
-  constructor (
-    @inject( FS ) private readonly fs: FsPromises,
-    @inject( ExtensionContext ) private readonly context: vscode.ExtensionContext,
-    @inject( DebugSessionTracker ) private readonly tracker: DebugSessionTracker
+  constructor(
+    @inject(FS) private readonly fs: FsPromises, // @inject(ExtensionContext) private readonly context: vscode.ExtensionContext, // @inject(DebugSessionTracker) private readonly tracker: DebugSessionTracker,
   ) {
-
     // this.debugSessionTracker.onSessionEnded( session => {
     //   if ( this.panel && session === this.session ) {
     //     this.panel.dispose();
     //   }
     // } );
-
     // this.debugSessionTracker.onSessionAdded( session => {
     //   // if ( !this.panel ) {
     //   //   return;
     //   // }
-
     //   if ( [ DebugType.Chrome, DebugType.Edge ].includes( session.type as DebugType ) ) {
     //     this.session = session;
     //     this.showBrowserElements();
@@ -92,57 +88,58 @@ export class Elements {
   /**
    * Attaches the CDP API. Should be called for each
    */
-  public async attach ( cdp: Cdp.Api ) {
+  public async attach(cdp: Cdp.Api) {
     this.temp = cdp;
 
-    this.currentFileKey.value = [ ( await cdp.Page.getFrameTree( {} ) )?.frameTree.frame.url! ];
+    const val = await cdp.Page.getFrameTree({});
+    if (!val) return;
+    this.currentFileKey.value = [val.frameTree.frame.url];
 
-    await cdp.DOM.enable( {} );
-    await cdp.Page.enable( {} );
+    await cdp.DOM.enable({});
+    await cdp.Page.enable({});
 
     const listener = this.disposable.push(
-      cdp.Page.on( 'domContentEventFired', evt => {
+      cdp.Page.on('domContentEventFired', () => {
         this.hasPageLoaded = true;
-        this.disposable.disposeObject( listener );
-      } ),
+        this.disposable.disposeObject(listener);
+      }),
     );
   }
 
   /**
- * Should be called before the root debug session ends. It'll fire a DAP
- * message to show a notification if appropriate.
- */
-  public dispose () {
+   * Should be called before the root debug session ends. It'll fire a DAP
+   * message to show a notification if appropriate.
+   */
+  public dispose() {
     this.disposable.dispose();
   }
 
-  public async GetDOM () {
-    if ( !this.temp ) {
+  public async GetDOM() {
+    if (!this.temp) {
       return;
     }
 
-    if ( !this.hasPageLoaded ) {
+    if (!this.hasPageLoaded) {
       return;
     }
 
-    return this.temp.DOM.getDocument( {} );
+    return this.temp.DOM.getDocument({});
   }
 
-  public GetSourceDebugUrl () {
-    if ( !this.temp ) {
+  public GetSourceDebugUrl() {
+    if (!this.temp) {
       return;
     }
 
-    if ( !this.hasPageLoaded ) {
+    if (!this.hasPageLoaded) {
       return;
     }
 
-    return this.temp.Page.getResourceTree( {} );
+    return this.temp.Page.getResourceTree({});
   }
 
-  public async GetHtmlForWebview () {
+  public async GetHtmlForWebview() {
     // this.temp?.DOM.querySelectorAll( { nodeId: 4 } ).then( console.log );
-
 
     // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
     // const scriptUri = webview.asWebviewUri( vscode.Uri.joinPath( this.context.extensionUri, 'resources', 'scripts', 'elements', 'test.js' ) );
@@ -153,10 +150,10 @@ export class Elements {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Document</title>
-      <style>${ await this.fs.readFile( elementsStylePath, 'utf-8' ) }</style>
+      <style>${await this.fs.readFile(elementsStylePath, 'utf-8')}</style>
     </head>
     <body>
-      <script>${ await this.fs.readFile( elementsPath, 'utf-8' ) }</script>
+      <script>${await this.fs.readFile(elementsPath, 'utf-8')}</script>
     </body>
     </html>`;
   }

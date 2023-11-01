@@ -9,7 +9,6 @@ import { Commands, CustomViews, DebugType } from '../common/contributionUtils';
 import { DebugSessionTracker } from './debugSessionTracker';
 
 class ElementsProvider {
-
   // private _onDidChangeTreeData = new EventEmitter<XHRBreakpoint | undefined>();
   // readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
@@ -19,41 +18,43 @@ class ElementsProvider {
   private panel?: vscode.WebviewPanel;
   session?: vscode.DebugSession;
 
-  constructor (
+  constructor(
     private readonly context: vscode.ExtensionContext,
     private readonly tracker: DebugSessionTracker,
     private readonly services: Container,
   ) {
     // this.xhrBreakpoints = [];
-
     // this._debugSessionTracker = debugSessionTracker;
     // debugSessionTracker.onSessionAdded( session => {
     //   if ( !DebugSessionTracker.isConcreteSession( session ) ) {
     //     return;
     //   }
-
     //   session.customRequest( 'enableXHRBreakpoints', {
     //     ids: this.xhrBreakpoints.filter( b => b.checkboxState ).map( b => b.id ),
     //   } );
     // } );
   }
 
-  showBrowserElements ( mute: boolean = false ) {
+  showBrowserElements(mute = false) {
     // if there is currently no debugging session, do nothing
-    if ( !this.tracker.getConcreteSessions().some( s => [ DebugType.Chrome, DebugType.Edge ].includes( s.type as DebugType ) ) ) {
-      if ( !mute ) vscode.window.showInformationMessage( 'No debugging session active.' );
+    if (
+      !this.tracker
+        .getConcreteSessions()
+        .some(s => [DebugType.Chrome, DebugType.Edge].includes(s.type as DebugType))
+    ) {
+      if (!mute) vscode.window.showInformationMessage('No debugging session active.');
       return;
     }
 
-    if ( this.panel ) {
-      this.panel.reveal( vscode.ViewColumn.Two );
+    if (this.panel) {
+      this.panel.reveal(vscode.ViewColumn.Two);
     } else {
       this.createWebviewView();
     }
   }
 
-  private async createWebviewView () {
-    console.log( this.context.extensionUri );
+  private async createWebviewView() {
+    console.log(this.context.extensionUri);
 
     this.panel = vscode.window.createWebviewPanel(
       CustomViews.BrowserElements,
@@ -63,11 +64,10 @@ class ElementsProvider {
         enableScripts: true,
         retainContextWhenHidden: true,
         localResourceRoots: [
-          vscode.Uri.joinPath( this.context.extensionUri, 'resources', 'scripts', 'elements' )
-        ]
+          vscode.Uri.joinPath(this.context.extensionUri, 'resources', 'scripts', 'elements'),
+        ],
       },
     );
-
 
     // this.panel.iconPath = {path:"$(code)";
 
@@ -75,37 +75,36 @@ class ElementsProvider {
     //   this.panel = undefined;
     // } );
 
-    this.panel.webview.html = await this.services.get( Elements ).GetHtmlForWebview();
+    this.panel.webview.html = await this.services.get(Elements).GetHtmlForWebview();
     // TODO remove this bc i just wanted to see :)
-    var temp = await this.services.get( Elements ).GetDOM();
+    const temp = await this.services.get(Elements).GetDOM();
 
-    console.log( temp );
-    this.panel.webview.postMessage( { command: "init", value: temp } )
+    console.log(temp);
+    this.panel.webview.postMessage({ command: 'init', value: temp });
   }
 
-  sessionAdded ( session: vscode.DebugSession ) {
+  sessionAdded(session: vscode.DebugSession) {
     // if ( !this.panel ) {
     //   return;
     // }
 
-    if ( session.type as DebugType in [ DebugType.Chrome, DebugType.Edge ] ) {
+    if ((session.type as DebugType) in [DebugType.Chrome, DebugType.Edge]) {
       this.session = session;
 
       // TODO: make a config for this
-      this.showBrowserElements( true );
+      this.showBrowserElements(true);
     } else {
       // this.panel.dispose();
     }
   }
 
-  sessionRemoved ( session: vscode.DebugSession ) {
-    if ( this.panel && session === this.session ) {
+  sessionRemoved(session: vscode.DebugSession) {
+    if (this.panel && session === this.session) {
       this.panel.dispose();
       this.panel = undefined;
       this.session = undefined;
     }
   }
-
 
   // getTreeItem ( item: XHRBreakpoint ): vscode.TreeItem {
   //   return item;
@@ -141,18 +140,19 @@ class ElementsProvider {
   // }
 }
 
-export function registerElementsUI (
+export function registerElementsUI(
   context: vscode.ExtensionContext,
   tracker: DebugSessionTracker,
   services: Container,
 ) {
-  const provider = new ElementsProvider( context, tracker, services );
-
+  const provider = new ElementsProvider(context, tracker, services);
 
   context.subscriptions.push(
-    vscode.commands.registerCommand( Commands.OpenBrowserElements, () => provider.showBrowserElements() ),
-    tracker.onSessionEnded( e => provider.sessionRemoved( e ) ),
-    tracker.onSessionAdded( e => provider.sessionAdded( e ) ),
+    vscode.commands.registerCommand(Commands.OpenBrowserElements, () =>
+      provider.showBrowserElements(),
+    ),
+    tracker.onSessionEnded(e => provider.sessionRemoved(e)),
+    tracker.onSessionAdded(e => provider.sessionAdded(e)),
     // vscode.window.onDidChangeActiveTextEditor( editor => this.updateEditorState( editor ) ),
     // this.tracker.onSessionAdded( () => this.updateEditorState( vscode.window.activeTextEditor ) ),
     // this.tracker.onSessionEnded( () => this.updateEditorState( vscode.window.activeTextEditor ) ),
